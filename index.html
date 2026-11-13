@@ -50,6 +50,28 @@ button:focus-visible { outline:3px solid #74243a; outline-offset:4px; }
 #close { background:transparent; color:#6b2534; border-color:#925452; }
 @keyframes reveal { from { opacity:0; transform:translateY(14px) scale(.98); } to { opacity:1; transform:none; } }
 @media (prefers-reduced-motion:reduce) { .letter.reveal { animation:none; } }
+.verses {
+  padding: 0 18px 24px;
+  display: grid;
+  gap: 12px;
+}
+.verse {
+  margin: 0;
+  padding: 22px 12px;
+  border: 1px solid #b7746a;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #fff3df, #f8dbca);
+  color: #672339;
+  font-size: clamp(20px, 5.3vw, 29px);
+  line-height: 1.2;
+  text-wrap: balance;
+}
+.verse em { display: block; margin-top: 4px; color: #872d42; }
+.verse span { display: block; }
+.verse.is-visible { animation: reveal .75s ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .verse.is-visible { animation: none; }
+}
 </style>
 </head>
 <body>
@@ -68,6 +90,24 @@ button:focus-visible { outline:3px solid #74243a; outline-offset:4px; }
       <img src="./ilustracion.webp" width="1000" height="1000" alt="Snoopy con una máscara de hockey, un ramo de rosas y un calendario que marca el día 13.">
       <div class="burst" aria-hidden="true"></div>
     </div>
+    <section class="verses" aria-label="Versos de nuestra canción">
+      <blockquote class="verse">
+        <span>Tú pones buena suerte</span>
+        <em>en mi viernes 13</em>
+      </blockquote>
+      <blockquote class="verse">
+        <span>Y me llevas lentamente a imaginar</span>
+        <em>A una vida donde te pueda cuidar</em>
+      </blockquote>
+      <blockquote class="verse">
+        <span>Contigo todo es más que suficiente</span>
+        <em>No ocupo a nadie más, solo a ti presente.</em>
+      </blockquote>
+      <blockquote class="verse">
+        <span>Y si la vida me da a escoger,</span>
+        <em>te escojo a ti otra vez.</em>
+      </blockquote>
+    </section>
     <footer><p>Qué suerte la mía de tenerte en un viernes 13. ♡</p><button id="close" type="button" hidden>Volver al sobre</button></footer>
   </article>
 </main>
@@ -121,6 +161,15 @@ const illustrationVisibility = new IntersectionObserver(([entry]) => {
   releaseFlowers(illustrationBurst, { x: '22%', y: '15%', symbols: ['💗', '❤️'], spread, count: 8 });
 }, { threshold: 0.35 });
 
+const verses = letter.querySelectorAll('.verse');
+const verseVisibility = new IntersectionObserver((entries) => {
+  for (const entry of entries) {
+    if (entry.intersectionRatio < .4 || letter.hidden) continue;
+    entry.target.classList.add('is-visible');
+    verseVisibility.unobserve(entry.target);
+  }
+}, { threshold: .4 });
+
 function openLetter() {
   envelopeBurst.replaceChildren();
   openButton.disabled = false;
@@ -131,7 +180,10 @@ function openLetter() {
   playerVisibility.observe(soundtrack);
   document.querySelector('#question').focus({ preventScroll: true });
   window.scrollTo(0, 0);
-  if (!reducedMotion.matches) illustrationVisibility.observe(illustration);
+  if (!reducedMotion.matches) {
+    illustrationVisibility.observe(illustration);
+    verses.forEach((verse) => verseVisibility.observe(verse));
+  }
 }
 openButton.addEventListener('click', () => {
   if (reducedMotion.matches) {
@@ -152,6 +204,8 @@ openButton.addEventListener('click', () => {
 closeButton.addEventListener('click', () => {
   illustrationVisibility.unobserve(illustration);
   illustrationBurst.replaceChildren();
+  verseVisibility.disconnect();
+  verses.forEach((verse) => verse.classList.remove('is-visible'));
   letter.hidden = true;
   letter.classList.remove('reveal');
   playerVisibility.unobserve(soundtrack);
