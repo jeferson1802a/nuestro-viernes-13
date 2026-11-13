@@ -19,6 +19,17 @@ h1,h2,p { margin:0; }
 .envelope::before,.envelope::after { content:""; position:absolute; inset:0; border-radius:inherit; }
 .envelope::before { background:#e9a9a6; clip-path:polygon(0 0,50% 63%,100% 0,100% 100%,0 100%); }
 .envelope::after { background:#f0b5ad; clip-path:polygon(0 0,100% 0,50% 62%); filter:drop-shadow(0 2px 2px #8b3b48); }
+.burst { position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:2; }
+.burst span {
+  position:absolute; top:var(--y); left:var(--x); font-size:var(--size);
+  animation:bloom 850ms cubic-bezier(.16,.75,.32,1) var(--delay) both;
+}
+@keyframes bloom {
+  0% { opacity:0; transform:translate(-50%,-50%) scale(.2); }
+  22% { opacity:1; }
+  72% { opacity:1; }
+  100% { opacity:0; transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) rotate(var(--turn)) scale(1.15); }
+}
 .seal { z-index:1; margin-top:19%; width:50px; aspect-ratio:1; display:grid; place-items:center; color:#ffd5ca; border:3px double #e4858b; background:#922d44; border-radius:50%; font-size:25px; box-shadow:0 3px 5px #742c4670; }
 button { cursor:pointer; font:600 14px system-ui,sans-serif; border-radius:100px; padding:13px 24px; border:1px solid transparent; }
 button:focus-visible { outline:3px solid #74243a; outline-offset:4px; }
@@ -55,6 +66,7 @@ button:focus-visible { outline:3px solid #74243a; outline-offset:4px; }
     <footer><p>Qué suerte la mía de tenerte en un viernes 13. ♡</p><button id="close" type="button" hidden>Volver al sobre</button></footer>
   </article>
 </main>
+<div class="burst" aria-hidden="true"></div>
 <script>
 const cover = document.querySelector('#cover');
 const letter = document.querySelector('#letter');
@@ -73,7 +85,32 @@ const playerVisibility = new IntersectionObserver(([entry]) => {
 cover.hidden = false;
 letter.hidden = true;
 closeButton.hidden = false;
-openButton.addEventListener('click', () => {
+const burst = document.querySelector('.burst');
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+function releaseFlowers() {
+  const seal = document.querySelector('.seal').getBoundingClientRect();
+  burst.style.setProperty('--x', (seal.left + seal.width / 2) + 'px');
+  burst.style.setProperty('--y', (seal.top + seal.height / 2) + 'px');
+  const symbols = ['🌹', '💗', '🌸', '❤️'];
+  const spread = Math.min(window.innerWidth * .42, 220);
+  for (let index = 0; index < 20; index += 1) {
+    const petal = document.createElement('span');
+    const angle = index * 2.399963;
+    const distance = spread * (.55 + (index % 5) * .11);
+    petal.textContent = symbols[index % symbols.length];
+    petal.style.setProperty('--dx', Math.cos(angle) * distance + 'px');
+    petal.style.setProperty('--dy', (Math.sin(angle) * distance - 42) + 'px');
+    petal.style.setProperty('--turn', (index % 2 ? 32 : -32) + 'deg');
+    petal.style.setProperty('--size', (20 + (index % 4) * 5) + 'px');
+    petal.style.setProperty('--delay', (index % 5) * 20 + 'ms');
+    burst.append(petal);
+  }
+}
+
+function openLetter() {
+  burst.replaceChildren();
+  openButton.disabled = false;
   cover.hidden = true;
   letter.hidden = false;
   letter.classList.add('reveal');
@@ -81,6 +118,15 @@ openButton.addEventListener('click', () => {
   playerVisibility.observe(soundtrack);
   document.querySelector('#question').focus({ preventScroll: true });
   window.scrollTo(0, 0);
+}
+openButton.addEventListener('click', () => {
+  if (reducedMotion.matches) {
+    openLetter();
+    return;
+  }
+  openButton.disabled = true;
+  releaseFlowers();
+  window.setTimeout(openLetter, 940);
 });
 closeButton.addEventListener('click', () => {
   letter.hidden = true;
