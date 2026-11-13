@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#4d1825">
+<meta property="og:title" content="Para mi persona favorita 💌">
+<meta property="og:description" content="Te dejé una cartita. Ábrela cuando quieras.">
+<title>Para mi persona favorita 💌</title>
+<style>
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin:0; min-height:100svh; display:grid; place-items:center; padding:24px 16px; text-align:center; color:#4f1d28; font-family:Georgia,serif; background:radial-gradient(ellipse at 50% 32%,#f6d4c6,#da9da0 65%,#bd747e); }
+main { width:min(100%,480px); }
+h1,h2,p { margin:0; }
+.cover h1 { font-size:clamp(40px,10vw,68px); font-weight:400; line-height:.97; letter-spacing:-.055em; }
+.cover h1 em { display:block; color:#7b2438; }
+.envelope { position:relative; display:grid; place-items:center; width:min(76%,290px); aspect-ratio:1.57; margin:46px auto 30px; border-radius:7px; background:#d48589; box-shadow:0 19px 38px #651b3240; isolation:isolate; }
+.envelope::before,.envelope::after { content:""; position:absolute; inset:0; border-radius:inherit; }
+.envelope::before { background:#e9a9a6; clip-path:polygon(0 0,50% 63%,100% 0,100% 100%,0 100%); }
+.envelope::after { background:#f0b5ad; clip-path:polygon(0 0,100% 0,50% 62%); filter:drop-shadow(0 2px 2px #8b3b48); }
+.seal { z-index:1; margin-top:19%; width:50px; aspect-ratio:1; display:grid; place-items:center; color:#ffd5ca; border:3px double #e4858b; background:#922d44; border-radius:50%; font-size:25px; box-shadow:0 3px 5px #742c4670; }
+button { cursor:pointer; font:600 14px system-ui,sans-serif; border-radius:100px; padding:13px 24px; border:1px solid transparent; }
+button:focus-visible { outline:3px solid #74243a; outline-offset:4px; }
+#open { background:#75243a; color:#fff6ee; box-shadow:0 6px 16px #74243a35; }
+#open:hover { background:#5c172c; }
+.letter { overflow:hidden; background:#f6d9b3; border:1px solid #a55f62; border-radius:18px; box-shadow:0 20px 50px #651b3242; }
+.letter.reveal { animation:reveal .45s ease-out both; }
+.letter header { padding:25px 16px 0; }
+.letter h2 { font-size:clamp(31px,7.8vw,47px); line-height:1.02; font-weight:400; letter-spacing:-.04em; text-wrap:balance; }
+.letter h2 em { color:#8b2438; }
+.letter img { display:block; width:100%; height:auto; mask-image:linear-gradient(to bottom,transparent,#000 12%,#000 94%,transparent); }
+.letter footer { padding:0 16px 23px; }
+.letter p { font-size:clamp(16px,4.1vw,20px); font-style:italic; margin-bottom:13px; }
+#close { background:transparent; color:#6b2534; border-color:#925452; }
+@keyframes reveal { from { opacity:0; transform:translateY(14px) scale(.98); } to { opacity:1; transform:none; } }
+@media (prefers-reduced-motion:reduce) { .letter.reveal { animation:none; } }
+</style>
+</head>
+<body>
+<main>
+  <section class="cover" id="cover" hidden>
+    <h1>Para mi persona <em>favorita</em></h1>
+    <div class="envelope" aria-hidden="true"><span class="seal">♥</span></div>
+    <button id="open" type="button">Abrir mi cartita</button>
+  </section>
+  <article class="letter" id="letter">
+    <header><h2 id="question" tabindex="-1">¿Entonces este será nuestro primer <em>viernes 13</em> juntos?</h2></header>
+    <img src="./ilustracion.webp" width="1000" height="1000" alt="Snoopy con una máscara de hockey, un ramo de rosas y un calendario que marca el día 13.">
+    <footer><p>Qué suerte la mía de tenerte en un viernes 13. ♡</p><button id="close" type="button" hidden>Volver al sobre</button></footer>
+  </article>
+</main>
+<script>
+const cover = document.querySelector('#cover');
+const letter = document.querySelector('#letter');
+const openButton = document.querySelector('#open');
+const closeButton = document.querySelector('#close');
+
+cover.hidden = false;
+letter.hidden = true;
+closeButton.hidden = false;
+openButton.addEventListener('click', () => {
+  cover.hidden = true;
+  letter.hidden = false;
+  letter.classList.add('reveal');
+  document.querySelector('#question').focus({ preventScroll: true });
+  window.scrollTo(0, 0);
+});
+closeButton.addEventListener('click', () => {
+  letter.hidden = true;
+  letter.classList.remove('reveal');
+  cover.hidden = false;
+  openButton.focus();
+});
+</script>
+</body>
+</html>
