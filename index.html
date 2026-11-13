@@ -122,13 +122,25 @@ button:focus-visible { outline:3px solid #74243a; outline-offset:4px; }
   line-height: .95;
   text-decoration: none;
 }
+.cover h1 em, .verse:last-child em {
+  color: #742137;
+  -webkit-text-stroke: .65px currentColor;
+}
+.seal {
+  width: 58px;
+  grid-template-columns: auto auto auto;
+  place-content: center;
+  gap: 3px;
+}
+.seal-initial { font: 700 12px 'Asul', Georgia, serif; }
+.seal-heart { font-size: 16px; line-height: 1; }
 </style>
 </head>
 <body>
 <main>
   <section class="cover" id="cover" hidden>
     <h1>Para mi persona <em>favorita</em></h1>
-    <div class="envelope" aria-hidden="true"><span class="seal">♥</span></div>
+    <div class="envelope" aria-hidden="true"><span class="seal"><span class="seal-initial">J</span><span class="seal-heart">♥</span><span class="seal-initial">A</span></span></div>
     <button id="open" type="button">Abrir mi cartita</button>
   </section>
   <article class="letter" id="letter">
