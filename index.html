@@ -20,6 +20,8 @@ h1,h2,p { margin:0; }
 .envelope::before { background:#e9a9a6; clip-path:polygon(0 0,50% 63%,100% 0,100% 100%,0 100%); }
 .envelope::after { background:#f0b5ad; clip-path:polygon(0 0,100% 0,50% 62%); filter:drop-shadow(0 2px 2px #8b3b48); }
 .burst { position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:2; }
+.illustration { position:relative; overflow:hidden; }
+.illustration .burst { position:absolute; }
 .burst span {
   position:absolute; top:var(--y); left:var(--x); font-size:var(--size);
   animation:bloom 850ms cubic-bezier(.16,.75,.32,1) var(--delay) both;
@@ -62,7 +64,10 @@ button:focus-visible { outline:3px solid #74243a; outline-offset:4px; }
     <section class="music" aria-label="Nuestra canción">
       <iframe id="soundtrack" title="Nuestra canción en YouTube" allow="autoplay; encrypted-media; fullscreen" referrerpolicy="strict-origin-when-cross-origin" hidden></iframe>
     </section>
-    <img src="./ilustracion.webp" width="1000" height="1000" alt="Snoopy con una máscara de hockey, un ramo de rosas y un calendario que marca el día 13.">
+    <div class="illustration">
+      <img src="./ilustracion.webp" width="1000" height="1000" alt="Snoopy con una máscara de hockey, un ramo de rosas y un calendario que marca el día 13.">
+      <div class="burst" aria-hidden="true"></div>
+    </div>
     <footer><p>Qué suerte la mía de tenerte en un viernes 13. ♡</p><button id="close" type="button" hidden>Volver al sobre</button></footer>
   </article>
 </main>
@@ -85,16 +90,13 @@ const playerVisibility = new IntersectionObserver(([entry]) => {
 cover.hidden = false;
 letter.hidden = true;
 closeButton.hidden = false;
-const burst = document.querySelector('.burst');
+const envelopeBurst = document.querySelector('main + .burst');
+const illustration = document.querySelector('.illustration');
+const illustrationBurst = illustration.querySelector('.burst');
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-function releaseFlowers() {
-  const seal = document.querySelector('.seal').getBoundingClientRect();
-  burst.style.setProperty('--x', (seal.left + seal.width / 2) + 'px');
-  burst.style.setProperty('--y', (seal.top + seal.height / 2) + 'px');
-  const symbols = ['🌹', '💗', '🌸', '❤️'];
-  const spread = Math.min(window.innerWidth * .42, 220);
-  for (let index = 0; index < 20; index += 1) {
+function releaseFlowers(layer, { x, y, symbols, spread, count }) {
+  for (let index = 0; index < count; index += 1) {
     const petal = document.createElement('span');
     const angle = index * 2.399963;
     const distance = spread * (.55 + (index % 5) * .11);
@@ -104,12 +106,23 @@ function releaseFlowers() {
     petal.style.setProperty('--turn', (index % 2 ? 32 : -32) + 'deg');
     petal.style.setProperty('--size', (20 + (index % 4) * 5) + 'px');
     petal.style.setProperty('--delay', (index % 5) * 20 + 'ms');
-    burst.append(petal);
+    petal.style.setProperty('--x', x);
+    petal.style.setProperty('--y', y);
+    petal.addEventListener('animationend', () => petal.remove(), { once: true });
+    layer.append(petal);
   }
 }
 
+const illustrationVisibility = new IntersectionObserver(([entry]) => {
+  if (!entry.isIntersecting || letter.hidden) return;
+  illustrationVisibility.unobserve(illustration);
+  const spread = Math.min(illustration.clientWidth * .23, 110);
+  releaseFlowers(illustrationBurst, { x: '23%', y: '41%', symbols: ['🌹', '🌸'], spread, count: 9 });
+  releaseFlowers(illustrationBurst, { x: '22%', y: '15%', symbols: ['💗', '❤️'], spread, count: 8 });
+}, { threshold: 0.35 });
+
 function openLetter() {
-  burst.replaceChildren();
+  envelopeBurst.replaceChildren();
   openButton.disabled = false;
   cover.hidden = true;
   letter.hidden = false;
@@ -118,6 +131,7 @@ function openLetter() {
   playerVisibility.observe(soundtrack);
   document.querySelector('#question').focus({ preventScroll: true });
   window.scrollTo(0, 0);
+  if (!reducedMotion.matches) illustrationVisibility.observe(illustration);
 }
 openButton.addEventListener('click', () => {
   if (reducedMotion.matches) {
@@ -125,10 +139,19 @@ openButton.addEventListener('click', () => {
     return;
   }
   openButton.disabled = true;
-  releaseFlowers();
+  const seal = document.querySelector('.seal').getBoundingClientRect();
+  releaseFlowers(envelopeBurst, {
+    x: (seal.left + seal.width / 2) + 'px',
+    y: (seal.top + seal.height / 2) + 'px',
+    symbols: ['🌹', '💗', '🌸', '❤️'],
+    spread: Math.min(window.innerWidth * .42, 220),
+    count: 20,
+  });
   window.setTimeout(openLetter, 940);
 });
 closeButton.addEventListener('click', () => {
+  illustrationVisibility.unobserve(illustration);
+  illustrationBurst.replaceChildren();
   letter.hidden = true;
   letter.classList.remove('reveal');
   playerVisibility.unobserve(soundtrack);
