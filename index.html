@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#4d1825">
-<meta property="og:title" content="Para mi persona favorita 💌">
-<meta property="og:description" content="Te dejé una cartita. Ábrela cuando quieras.">
-<title>Para mi persona favorita 💌</title>
+<meta property="og:title" content="Este viernes 13 pensé en ti 💌">
+<meta property="og:description" content="Hoy me habría encantado estar contigo.">
+<title>Este viernes 13 pensé en ti 💌</title>
 <style>
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
@@ -39,9 +39,21 @@ button:focus-visible { outline:3px solid #74243a; outline-offset:4px; }
 #open:hover { background:#5c172c; }
 .letter { overflow:hidden; background:#f6d9b3; border:1px solid #a55f62; border-radius:18px; box-shadow:0 20px 50px #651b3242; }
 .letter.reveal { animation:reveal .45s ease-out both; }
-.letter header { padding:25px 16px 0; }
+.letter header {
+  margin: 12px 12px 0;
+  padding: 26px 16px 10px;
+  border: 1px solid #b7746a;
+  border-bottom: 0;
+  border-radius: 60% 60% 0 0 / 26px 26px 0 0;
+}
+.letter header .dedication {
+  max-width: 34ch;
+  margin: 12px auto 0;
+  font: 400 clamp(16px, 3.9vw, 18px)/1.45 Georgia, serif;
+  text-wrap: pretty;
+}
 .letter h2 { font-size:clamp(31px,7.8vw,47px); line-height:1.02; font-weight:400; letter-spacing:-.04em; text-wrap:balance; }
-.letter h2 em { color:#8b2438; }
+.letter h2 em { display:block; color:#8b2438; }
 .letter img { display:block; width:100%; height:auto; mask-image:linear-gradient(to bottom,transparent,#000 12%,#000 94%,transparent); }
 .music { margin:16px auto 0; width:calc(100% - 32px); }
 .music iframe { display:block; width:100%; min-height:200px; aspect-ratio:16/9; border:0; border-radius:10px; background:#4d1825; }
@@ -51,22 +63,35 @@ button:focus-visible { outline:3px solid #74243a; outline-offset:4px; }
 @keyframes reveal { from { opacity:0; transform:translateY(14px) scale(.98); } to { opacity:1; transform:none; } }
 @media (prefers-reduced-motion:reduce) { .letter.reveal { animation:none; } }
 .verses {
-  padding: 0 18px 14px;
-  display: grid;
-  gap: 8px;
+  margin: 22px 16px 18px;
+  padding: 9px 14px;
+  border-block: 1px solid #b7746a;
+  background: #fff2df80;
 }
 .verse {
-  margin: 0;
-  padding: 10px 12px;
-  border: 1px solid #b7746a;
-  border-radius: 12px;
-  background: linear-gradient(145deg, #fff3df, #f8dbca);
+  margin: 0 auto;
+  padding: 9px 0;
   color: #672339;
-  font-size: clamp(16px, 4.2vw, 21px);
-  line-height: 1.2;
+  font-size: clamp(16px, 4.2vw, 20px);
+  line-height: 1.24;
   text-wrap: balance;
 }
-.verse em { display: block; margin-top: 4px; color: #872d42; }
+.verse + .verse::before {
+  content: "";
+  display: block;
+  width: 20px;
+  margin: 0 auto 9px;
+  border-top: 1px solid #b7746a;
+  transform: rotate(-8deg);
+}
+.verse em { display: block; margin-top: 2px; color: #872d42; }
+.verse:last-child em {
+  font-size: 1.17em;
+  text-decoration: underline;
+  text-decoration-color: #b7746a;
+  text-decoration-thickness: 1px;
+  text-underline-offset: .24em;
+}
 .verse span { display: block; }
 .verse.is-visible { animation: reveal .75s ease-out both; }
 @media (prefers-reduced-motion: reduce) {
@@ -82,14 +107,17 @@ button:focus-visible { outline:3px solid #74243a; outline-offset:4px; }
     <button id="open" type="button">Abrir mi cartita</button>
   </section>
   <article class="letter" id="letter">
-    <header><h2 id="question" tabindex="-1">¿Entonces este será nuestro primer <em>viernes 13</em> juntos?</h2></header>
-    <section class="music" aria-label="Nuestra canción">
-      <iframe id="soundtrack" title="Nuestra canción en YouTube" allow="autoplay; encrypted-media; fullscreen" referrerpolicy="strict-origin-when-cross-origin" hidden></iframe>
-    </section>
+    <header>
+      <h2 id="question" tabindex="-1">Este viernes 13 <em>pensé en ti</em></h2>
+      <p class="dedication">Hoy me habría encantado estar contigo y llevarte flores. Te las dejo en esta cartita, con la canción que me hizo pensar en ti.</p>
+    </header>
     <div class="illustration">
       <img src="./ilustracion.webp" width="1000" height="1000" alt="Snoopy con una máscara de hockey, un ramo de rosas y un calendario que marca el día 13.">
       <div class="burst" aria-hidden="true"></div>
     </div>
+    <section class="music" aria-label="Nuestra canción">
+      <iframe id="soundtrack" title="Nuestra canción en YouTube" allow="autoplay; encrypted-media; fullscreen" referrerpolicy="strict-origin-when-cross-origin" hidden></iframe>
+    </section>
     <section class="verses" aria-label="Versos de nuestra canción">
       <blockquote class="verse">
         <span>Tú pones buena suerte</span>
@@ -108,7 +136,7 @@ button:focus-visible { outline:3px solid #74243a; outline-offset:4px; }
         <em>te escojo a ti otra vez.</em>
       </blockquote>
     </section>
-    <footer><p>Qué suerte la mía de tenerte en un viernes 13. ♡</p><button id="close" type="button" hidden>Volver al sobre</button></footer>
+    <footer><p>Ojalá el próximo viernes 13 pueda darte las flores en persona. ♡</p><button id="close" type="button" hidden>Volver al sobre</button></footer>
   </article>
 </main>
 <div class="burst" aria-hidden="true"></div>
